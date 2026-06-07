@@ -1,0 +1,1724 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>retarded bee</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0f;--bg2:#141418;--bg3:#1c1c22;--bg4:#22222a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#eeedf0;--muted:#7f7f90;--muted2:#4a4a58;
+  --accent:#b8f95c;--accent2:#96d940;--accent-dim:rgba(184,249,92,0.1);--accent-dim2:rgba(184,249,92,0.05);
+  --red:#ff5252;--red-dim:rgba(255,82,82,0.12);
+  --green:#4ade80;--green-dim:rgba(74,222,128,0.11);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,0.11);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.1);
+  --r:8px;--r2:14px;--r3:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;line-height:1.6}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+.app{max-width:660px;margin:0 auto;padding:2rem 1.25rem 5rem}
+.screen{display:none}.screen.active{display:block}
+
+/* TYPOGRAPHY */
+.hero{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,7vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em}
+.hero em{font-style:normal;color:var(--accent)}
+h2{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;color:var(--text);letter-spacing:.03em}
+h3{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem}
+p{font-size:0.875rem;color:var(--muted);line-height:1.75;letter-spacing:.01em}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem 1.4rem;margin-bottom:.875rem}
+.card-glow{border-color:rgba(184,249,92,.2);background:var(--accent-dim2)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.6rem 1.2rem;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.035em;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;-webkit-user-select:none;user-select:none}
+.btn:hover{background:var(--bg4);border-color:rgba(255,255,255,.2)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#0c0c0f;border-color:var(--accent);font-weight:700}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);background:var(--bg3)}
+.btn-lg{padding:.85rem 2rem;font-size:.95rem;border-radius:var(--r2)}
+.btn-full{width:100%}
+.btn-row{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .75rem;border-radius:999px;border:1px solid var(--border);background:var(--bg3);font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.02em;color:var(--muted);cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{background:var(--accent-dim);border-color:rgba(184,249,92,.4);color:var(--accent)}
+.chip-row{display:flex;flex-wrap:wrap;gap:.45rem}
+
+/* CEFR color chips */
+.chip.on[data-l="A1"]{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.4);color:#4ade80}
+.chip.on[data-l="A2"]{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.4);color:#34d399}
+.chip.on[data-l="B1"]{background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.4);color:#60a5fa}
+.chip.on[data-l="B2"]{background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.4);color:#818cf8}
+.chip.on[data-l="C1"]{background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.4);color:#c084fc}
+.chip.on[data-l="C2"]{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.4);color:#f472b6}
+
+/* CEFR badges */
+.cb{display:inline-block;padding:.12rem .5rem;border-radius:999px;font-size:.68rem;font-weight:700;letter-spacing:.04em}
+.cb-A1{background:rgba(74,222,128,.15);color:#4ade80}
+.cb-A2{background:rgba(52,211,153,.15);color:#34d399}
+.cb-B1{background:rgba(96,165,250,.15);color:#60a5fa}
+.cb-B2{background:rgba(129,140,248,.15);color:#818cf8}
+.cb-C1{background:rgba(192,132,252,.15);color:#c084fc}
+.cb-C2{background:rgba(244,114,182,.15);color:#f472b6}
+
+/* SUBJECT badges */
+.sb{display:inline-block;padding:.12rem .5rem;border-radius:5px;font-size:.68rem;font-weight:500;background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+
+/* SELECT */
+select{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:.55rem .9rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.875rem;letter-spacing:.01em;cursor:pointer;outline:none;transition:border-color .15s}
+select:focus{border-color:var(--accent)}
+select option{background:var(--bg3)}
+
+/* INPUT */
+.spell-input{width:100%;background:var(--bg3);border:2px solid var(--border2);border-radius:var(--r2);padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--text);letter-spacing:.1em;outline:none;transition:border-color .2s,background .2s;margin:.75rem 0}
+.spell-input:focus{border-color:rgba(184,249,92,.5);background:rgba(184,249,92,.03)}
+.spell-input.correct{border-color:var(--green);background:var(--green-dim)}
+.spell-input.wrong{border-color:var(--red);background:var(--red-dim)}
+
+/* SEARCH */
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:.65rem 1rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.875rem;letter-spacing:.01em;outline:none;margin-bottom:.875rem;transition:border-color .15s}
+.search-input:focus{border-color:var(--accent)}
+
+/* TIMER BAR */
+.ttrack{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:1.25rem}
+.tfill{height:100%;border-radius:2px;transition:width .9s linear,background 1s;background:var(--accent)}
+
+/* BLANKS */
+.blanks{font-family:'JetBrains Mono',monospace;font-size:clamp(1.3rem,4vw,2rem);letter-spacing:.25em;color:var(--muted2);min-height:2.8rem;-webkit-user-select:none;user-select:none;margin:.25rem 0}
+
+/* PROGRESS DOTS */
+.dots{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:1rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--bg4);border:1px solid var(--border);transition:all .25s}
+.dot.done{background:var(--green);border-color:var(--green)}
+.dot.wrong{background:var(--red);border-color:var(--red)}
+.dot.skip{background:var(--amber);border-color:var(--amber)}
+.dot.curr{background:var(--accent);border-color:var(--accent);transform:scale(1.4)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.875rem .6rem;text-align:center}
+.stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text);line-height:1}
+.stat-lbl{font-size:.68rem;color:var(--muted);margin-top:.25rem;text-transform:uppercase;letter-spacing:.07em}
+
+/* FEEDBACK */
+.feedback{min-height:2.25rem;font-size:.875rem;font-weight:600;text-align:center;padding:.5rem .75rem;border-radius:var(--r);transition:all .2s;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+.fb-ok{background:var(--green-dim);color:var(--green)}
+.fb-err{background:var(--red-dim);color:var(--red)}
+.fb-warn{background:var(--amber-dim);color:var(--amber)}
+.fb-info{background:var(--blue-dim);color:var(--blue)}
+
+/* SENTENCE BOX */
+.sent-box{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;font-size:.85rem;color:var(--muted);font-style:italic;margin:.5rem 0;line-height:1.75;animation:fadeUp .2s ease}
+.sent-box strong{color:var(--blue);font-style:normal;font-weight:600}
+
+/* PASSED */
+.passed-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+.pass-chip{padding:.28rem .65rem;background:var(--amber-dim);border:1px solid rgba(251,191,36,.25);border-radius:999px;font-size:.72rem;color:var(--amber);cursor:pointer;transition:all .15s;font-weight:500}
+.pass-chip:hover{background:rgba(251,191,36,.2)}
+
+/* RESULTS */
+.result-item{display:flex;align-items:flex-start;gap:.65rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.result-item:last-child{border-bottom:none}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:.45rem}
+.rword{font-weight:600;font-size:.875rem}
+.rdetail{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+.typed-wrong{color:var(--red);font-family:'JetBrains Mono',monospace}
+.review-actions{display:none;gap:.6rem;flex-wrap:wrap;margin:.35rem 0 1rem}
+.review-actions.on{display:flex}
+.mini-summary{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.mini-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.75rem .85rem}
+.mini-card strong{display:block;font-family:'Syne',sans-serif;font-size:1.25rem;color:var(--text);line-height:1}
+.mini-card span{display:block;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem}
+
+/* WORD LIST */
+.wl-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:.5rem;padding:.6rem .5rem;border-bottom:1px solid var(--border);cursor:pointer;border-radius:var(--r);transition:background .1s}
+.wl-item:hover{background:var(--bg3);padding-left:.75rem}
+.wl-item:last-child{border-bottom:none}
+.wl-right{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+
+/* AUDIO BUTTONS */
+.audio-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+.abtn{display:flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:var(--r);background:var(--bg3);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:500;letter-spacing:.025em;cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none}
+.abtn:hover{border-color:var(--border2);color:var(--text)}
+.abtn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.abtn.penalty{border-color:rgba(251,191,36,.3);color:var(--amber);background:var(--amber-dim)}
+.abtn.penalty:hover{border-color:rgba(251,191,36,.5)}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.05rem;color:var(--accent);letter-spacing:.02em}
+.logo-sub{color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;font-weight:400;letter-spacing:.03em;margin-left:.4rem}
+
+/* GAME HEADER */
+.game-hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin-bottom:.75rem}
+.gstat-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem}
+.gstat-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem}
+.timer-val{color:var(--accent);text-align:center}
+.score-val{text-align:right}
+
+/* POOL PILL */
+.pool-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;background:var(--accent-dim);border:1px solid rgba(184,249,92,.25);border-radius:999px;font-size:.78rem;color:var(--accent);font-weight:600}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:1.25rem 0}
+
+/* DQ */
+.dq-center{text-align:center;padding:2.5rem 1.5rem}
+.dq-icon{font-size:3.5rem;display:block;margin-bottom:1rem}
+.dq-correct{font-family:'JetBrains Mono',monospace;font-size:1.6rem;color:var(--accent);margin:.75rem 0 .25rem;font-weight:500}
+.dq-typed{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--red);text-decoration:line-through}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.anim-shake{animation:shake .4s ease}
+.anim-pop{animation:pop .25s ease}
+.anim-fadein{animation:fadeUp .3s ease}
+
+/* META ROW */
+.meta-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem}
+
+/* SECTION LABEL */
+.slabel{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* NOTE */
+.note{font-size:.72rem;color:var(--muted2);text-align:center;margin-top:.35rem}
+
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .game-hdr{gap:.5rem}
+  .gstat-val{font-size:.95rem}
+  .blanks{font-size:1.1rem;letter-spacing:.15em}
+  .spell-input{font-size:1.15rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="topbar">
+    <div><span class="logo">Black Retarded bee</span><span class="logo-sub">spellin bee</span></div>
+    <div class="pool-pill" id="pool-pill">-- words</div>
+  </div>
+  <div style="margin-bottom:1.75rem">
+    <div class="hero">อ้วน <em>ดำ</em><br>ห้ามเล่น</div>
+    <p style="margin-top:.65rem">รับแต่ผู้ชาย / เก เป็นกรณีพิเศษ</p>
+  </div>
+
+  <!-- ACCENT -->
+  <div class="card" style="margin-bottom:.875rem">
+    <h3>🌎 Voice / Accent</h3>
+    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+      <span id="accent-flag" style="font-size:1.2rem">US</span>
+      <select id="accent-sel" onchange="updateAccent()">
+        <option value="en-US">American (US)</option>
+        <option value="en-GB">British (UK)</option>
+        <option value="en-AU">Australian (AU)</option>
+        <option value="en-IN">Indian (IN)</option>
+      </select>
+      <button class="btn btn-ghost" onclick="testVoice()" style="font-size:.78rem">Test</button>
+    </div>
+  </div>
+
+  <!-- CEFR FILTER -->
+  <div class="card">
+    <h3>📊 DIFFICULTY</h3>
+    <div class="chip-row" id="cefr-filter"></div>
+    <div style="margin-top:.3rem;margin-bottom:.3rem" class="divider"></div>
+    <h3>📚 Subject</h3>
+    <div class="chip-row" id="subj-filter"></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary btn-lg" style="flex:2" onclick="startGame()">Start</button>
+    <button class="btn btn-lg" style="flex:1" onclick="openWordList()">words list</button>
+  </div>
+  <p style="text-align:center;margin-top:.75rem;font-size:.75rem">ขาย 20 รวม domain</p>
+</div>
+
+<!-- GAME -->
+<div id="s-game" class="screen">
+  <div class="game-hdr">
+    <div>
+      <div class="gstat-lbl">Word</div>
+      <div class="gstat-val" id="g-num">1 / 20</div>
+    </div>
+    <div>
+      <div class="gstat-lbl" style="text-align:center">Time</div>
+      <div class="gstat-val timer-val" id="g-timer">5:00</div>
+    </div>
+    <div>
+      <div class="gstat-lbl score-val">Score</div>
+      <div class="gstat-val score-val" id="g-score">0 / 40</div>
+    </div>
+  </div>
+  <div class="ttrack"><div class="tfill" id="t-fill" style="width:100%"></div></div>
+  <div class="dots" id="g-dots"></div>
+
+  <div class="card card-glow">
+    <div class="meta-row" id="g-meta"></div>
+    <div class="blanks" id="g-blanks"></div>
+    <div style="font-size:.75rem;color:var(--muted2);margin-bottom:.875rem" id="g-hint"></div>
+
+    <div class="audio-row">
+      <button class="abtn" id="btn-hear" onclick="speakCurrent()">Hear word</button>
+      <button class="abtn penalty" id="btn-sent" onclick="toggleSentence()">Show sentence</button>
+      <button class="abtn penalty" id="btn-spell" onclick="speakLetters()">Spell out <span style="font-size:.65rem;opacity:.75">(-1 pt)</span></button>
+    </div>
+
+    <div id="sent-box" style="display:none"></div>
+    <input type="text" class="spell-input" id="g-input" placeholder="type your spelling..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+
+    <div class="btn-row">
+      <button class="btn btn-primary" style="flex:1;padding:.75rem" onclick="submitAnswer()">Submit</button>
+      <button class="btn btn-ghost" style="padding:.75rem 1.25rem" onclick="passWord()">Pass</button>
+    </div>
+    <div class="feedback" id="g-fb" style="margin-top:.75rem"></div>
+  </div>
+
+  <div id="g-passed" style="display:none;margin-top:.5rem">
+    <div class="slabel">Passed - tap to come back</div>
+    <div class="passed-list" id="g-plist"></div>
+  </div>
+</div>
+
+<!-- DQ -->
+<div id="s-dq" class="screen">
+  <div class="topbar"><div class="logo">BeeTrainer</div></div>
+  <div class="card">
+    <div class="dq-center">
+      <span class="dq-icon">DQ</span>
+      <h2 style="margin-bottom:.4rem">Eliminated</h2>
+      <p>One wrong answer ends it all. That's the rule.</p>
+      <div style="margin-top:1.25rem">
+        <div class="dq-typed" id="dq-typed"></div>
+        <div style="font-size:.75rem;color:var(--muted);margin:.5rem 0 .15rem">Correct spelling:</div>
+        <div class="dq-correct" id="dq-correct"></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid" id="dq-stats"></div>
+  <div class="btn-row" style="margin-top:.25rem">
+    <button class="btn btn-primary btn-lg" style="flex:1" onclick="startReviewRound()">Review this word</button>
+    <button class="btn btn-primary btn-lg" style="flex:1" onclick="startGame()">Try again</button>
+    <button class="btn btn-lg" onclick="goHome()">Settings</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="s-done" class="screen">
+  <div class="topbar"><div class="logo">BeeTrainer</div></div>
+  <div class="card" style="text-align:center;padding:2rem 1.5rem;margin-bottom:1rem">
+    <div style="font-size:3rem;margin-bottom:.65rem" id="done-em">*</div>
+    <div class="hero" style="font-size:2rem" id="done-title"></div>
+    <p style="margin-top:.5rem" id="done-msg"></p>
+  </div>
+  <div class="stats-grid" id="done-stats"></div>
+  <div class="divider"></div>
+  <div class="slabel">Results</div>
+  <div class="review-actions" id="review-actions">
+    <button class="btn btn-primary" onclick="startReviewRound()">Review missed words</button>
+    <button class="btn" onclick="openWordList()">Browse full list</button>
+  </div>
+  <div id="done-results" style="margin-bottom:1.25rem"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary btn-lg" style="flex:1" onclick="startGame()">Play again</button>
+    <button class="btn btn-lg" onclick="goHome()">Settings</button>
+  </div>
+</div>
+
+<!-- WORD LIST -->
+<div id="s-wl" class="screen">
+  <div class="topbar">
+    <div><span class="logo">BeeTrainer</span> <span class="logo-sub" id="wl-count"></span></div>
+    <button class="btn btn-ghost" onclick="goHome()">Back</button>
+  </div>
+  <input type="text" class="search-input" id="wl-search" placeholder="Search words..." oninput="renderWL()">
+  <div class="chip-row" id="wl-cefr" style="margin-bottom:.875rem"></div>
+  <div id="wl-list"></div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+const WORDS = [
+  {w:"Abduction",s:"PE",cefr:"B2"},
+  {w:"Ability",s:"PE",cefr:"A2"},
+  {w:"Accident",s:"PE",cefr:"A2"},
+  {w:"Adolescence",s:"PE",cefr:"C1"},
+  {w:"Adolescent",s:"PE",cefr:"C1"},
+  {w:"Adult",s:"PE",cefr:"A1"},
+  {w:"Aerobic",s:"PE",cefr:"A2"},
+  {w:"Aesthetic",s:"PE",cefr:"C1"},
+  {w:"Against",s:"PE",cefr:"A1"},
+  {w:"Agility",s:"PE",cefr:"A2"},
+  {w:"Ailment",s:"PE",cefr:"A2"},
+  {w:"Allergic",s:"PE",cefr:"A2"},
+  {w:"Alzheimer",s:"PE",cefr:"C1"},
+  {w:"Anemia",s:"PE",cefr:"B2"},
+  {w:"Anaemia",s:"PE",cefr:"B2"},
+  {w:"Anaerobic",s:"PE",cefr:"C2"},
+  {w:"Anorexia",s:"PE",cefr:"C1"},
+  {w:"Antioxidant",s:"PE",cefr:"C2"},
+  {w:"Athlete",s:"PE",cefr:"A2"},
+  {w:"Attractive",s:"PE",cefr:"B1"},
+  {w:"Balance",s:"PE",cefr:"A1"},
+  {w:"Bandage",s:"PE",cefr:"A2"},
+  {w:"Behavior",s:"PE",cefr:"A2"},
+  {w:"Behaviour",s:"PE",cefr:"A2"},
+  {w:"Capillaries",s:"PE",cefr:"C2"},
+  {w:"Cashew",s:"PE",cefr:"A2"},
+  {w:"Cholesterol",s:"PE",cefr:"C2"},
+  {w:"Chronic",s:"PE",cefr:"A2"},
+  {w:"Circulatory",s:"PE",cefr:"C2"},
+  {w:"Competition",s:"PE",cefr:"B1"},
+  {w:"Concertation",s:"PE",cefr:"C2"},
+  {w:"Conservative",s:"PE",cefr:"B2"},
+  {w:"Consumption",s:"PE",cefr:"B1"},
+  {w:"Crossover",s:"PE",cefr:"B2"},
+  {w:"Deficiency",s:"PE",cefr:"C1"},
+  {w:"Diabetes",s:"PE",cefr:"A1"},
+  {w:"Diarrhea",s:"PE",cefr:"B1"},
+  {w:"Diarrhoea",s:"PE",cefr:"B1"},
+  {w:"Digestion",s:"PE",cefr:"B1"},
+  {w:"Disease",s:"PE",cefr:"A2"},
+  {w:"Disorder",s:"PE",cefr:"B1"},
+  {w:"Endurance",s:"PE",cefr:"B2"},
+  {w:"Enormous",s:"PE",cefr:"B1"},
+  {w:"Enzyme",s:"PE",cefr:"A2"},
+  {w:"Exercise",s:"PE",cefr:"A2"},
+  {w:"Expect",s:"PE",cefr:"A1"},
+  {w:"Experience",s:"PE",cefr:"B2"},
+  {w:"Fatigue",s:"PE",cefr:"A2"},
+  {w:"Flexibility",s:"PE",cefr:"C1"},
+  {w:"Flexible",s:"PE",cefr:"A2"},
+  {w:"Force",s:"PE",cefr:"A1"},
+  {w:"Fundamental",s:"PE",cefr:"C1"},
+  {w:"Growth",s:"PE",cefr:"A1"},
+  {w:"Habit",s:"PE",cefr:"A1"},
+  {w:"Health",s:"PE",cefr:"A1"},
+  {w:"Healthy",s:"PE",cefr:"A1"},
+  {w:"Hereditary",s:"PE",cefr:"C2"},
+  {w:"Hormones",s:"PE",cefr:"A2"},
+  {w:"Hydration",s:"PE",cefr:"B1"},
+  {w:"Hygiene",s:"PE",cefr:"A2"},
+  {w:"Immune",s:"PE",cefr:"A2"},
+  {w:"Incident",s:"PE",cefr:"A2"},
+  {w:"Independent",s:"PE",cefr:"B1"},
+  {w:"Infection",s:"PE",cefr:"B1"},
+  {w:"Initial",s:"PE",cefr:"A2"},
+  {w:"Insomnia",s:"PE",cefr:"B1"},
+  {w:"Itchy",s:"PE",cefr:"A1"},
+  {w:"Jeopardy",s:"PE",cefr:"B2"},
+  {w:"Lateral",s:"PE",cefr:"B2"},
+  {w:"League",s:"PE",cefr:"A2"},
+  {w:"Malnourished",s:"PE",cefr:"C1"},
+  {w:"Massage",s:"PE",cefr:"A2"},
+  {w:"Match",s:"PE",cefr:"A1"},
+  {w:"Motion",s:"PE",cefr:"A1"},
+  {w:"Movement",s:"PE",cefr:"A2"},
+  {w:"Muscle",s:"PE",cefr:"A2"},
+  {w:"Portray",s:"PE",cefr:"B1"},
+  {w:"Prize",s:"PE",cefr:"A1"},
+  {w:"Natural",s:"PE",cefr:"A1"},
+  {w:"Nutrient",s:"PE",cefr:"B1"},
+  {w:"Nutrition",s:"PE",cefr:"B1"},
+  {w:"Occupational",s:"PE",cefr:"C2"},
+  {w:"Omelette",s:"PE",cefr:"B1"},
+  {w:"Omelet",s:"PE",cefr:"B1"},
+  {w:"Osteoporosis",s:"PE",cefr:"C2"},
+  {w:"Pancreas",s:"PE",cefr:"B2"},
+  {w:"Participate",s:"PE",cefr:"B2"},
+  {w:"Pathogen",s:"PE",cefr:"C1"},
+  {w:"Practice",s:"PE",cefr:"A2"},
+  {w:"Pregnancy",s:"PE",cefr:"B1"},
+  {w:"Protein",s:"PE",cefr:"A2"},
+  {w:"Protraction",s:"PE",cefr:"C2"},
+  {w:"Reference",s:"PE",cefr:"B1"},
+  {w:"Relationship",s:"PE",cefr:"B2"},
+  {w:"Relaxation",s:"PE",cefr:"B1"},
+  {w:"Repeat",s:"PE",cefr:"A1"},
+  {w:"Rest",s:"PE",cefr:"A1"},
+  {w:"Rotating",s:"PE",cefr:"A2"},
+  {w:"Roundabout",s:"PE",cefr:"A2"},
+  {w:"Saliva",s:"PE",cefr:"B1"},
+  {w:"Socialization",s:"PE",cefr:"C1"},
+  {w:"Spirit",s:"PE",cefr:"A1"},
+  {w:"Stamina",s:"PE",cefr:"B1"},
+  {w:"Stimulate",s:"PE",cefr:"C1"},
+  {w:"Stretch",s:"PE",cefr:"A1"},
+  {w:"Substantial",s:"PE",cefr:"B2"},
+  {w:"Surgery",s:"PE",cefr:"A2"},
+  {w:"Swell",s:"PE",cefr:"A1"},
+  {w:"Symptom",s:"PE",cefr:"A2"},
+  {w:"Teammate",s:"PE",cefr:"A1"},
+  {w:"Therapy",s:"PE",cefr:"A2"},
+  {w:"Trust",s:"PE",cefr:"A1"},
+  {w:"A cappella",s:"ART",cefr:"C2"},
+  {w:"Abstract",s:"ART",cefr:"B1"},
+  {w:"Accent",s:"ART",cefr:"B1"},
+  {w:"Adoration",s:"ART",cefr:"B2"},
+  {w:"Aesthetic",s:"ART",cefr:"C1"},
+  {w:"Alternative",s:"ART",cefr:"B1"},
+  {w:"Ancient",s:"ART",cefr:"A2"},
+  {w:"Arch",s:"ART",cefr:"A2"},
+  {w:"Architecture",s:"ART",cefr:"C2"},
+  {w:"Artistic",s:"ART",cefr:"B1"},
+  {w:"Artwork",s:"ART",cefr:"B1"},
+  {w:"Attractive",s:"ART",cefr:"B1"},
+  {w:"Background",s:"ART",cefr:"A1"},
+  {w:"Balance",s:"ART",cefr:"A1"},
+  {w:"Bizarre",s:"ART",cefr:"C1"},
+  {w:"Brush",s:"ART",cefr:"A1"},
+  {w:"Canon",s:"ART",cefr:"B2"},
+  {w:"Carve",s:"ART",cefr:"A2"},
+  {w:"Carving",s:"ART",cefr:"B1"},
+  {w:"Casting",s:"ART",cefr:"B1"},
+  {w:"Cello",s:"ART",cefr:"B1"},
+  {w:"Ceramics",s:"ART",cefr:"B2"},
+  {w:"Classical",s:"ART",cefr:"B1"},
+  {w:"Collection",s:"ART",cefr:"A2"},
+  {w:"Contrast",s:"ART",cefr:"B1"},
+  {w:"Craft",s:"ART",cefr:"A1"},
+  {w:"Crayon",s:"ART",cefr:"A2"},
+  {w:"Creativity",s:"ART",cefr:"C1"},
+  {w:"Decorative",s:"ART",cefr:"C1"},
+  {w:"Design",s:"ART",cefr:"A2"},
+  {w:"Dominance",s:"ART",cefr:"C1"},
+  {w:"Dynamics",s:"ART",cefr:"C1"},
+  {w:"Effectively",s:"ART",cefr:"C1"},
+  {w:"Emphasis",s:"ART",cefr:"C1"},
+  {w:"Exhibition",s:"ART",cefr:"B2"},
+  {w:"Facility",s:"ART",cefr:"B2"},
+  {w:"Form",s:"ART",cefr:"A1"},
+  {w:"Fretwork",s:"ART",cefr:"C1"},
+  {w:"Fundamental",s:"ART",cefr:"C1"},
+  {w:"Gallery",s:"ART",cefr:"B1"},
+  {w:"Gesture",s:"ART",cefr:"B2"},
+  {w:"Glance",s:"ART",cefr:"B1"},
+  {w:"Graphite",s:"ART",cefr:"B2"},
+  {w:"Grotesque",s:"ART",cefr:"C2"},
+  {w:"Gunfire",s:"ART",cefr:"A2"},
+  {w:"Humoresque",s:"ART",cefr:"C2"},
+  {w:"Illuminate",s:"ART",cefr:"C1"},
+  {w:"Impression",s:"ART",cefr:"B1"},
+  {w:"Indoors",s:"ART",cefr:"A2"},
+  {w:"Instruments",s:"ART",cefr:"A2"},
+  {w:"Isolation",s:"ART",cefr:"C1"},
+  {w:"Kiosk",s:"ART",cefr:"B1"},
+  {w:"Landscape",s:"ART",cefr:"B1"},
+  {w:"Latest",s:"ART",cefr:"A2"},
+  {w:"Literature",s:"ART",cefr:"C1"},
+  {w:"Lyre",s:"ART",cefr:"B2"},
+  {w:"Masterpiece",s:"ART",cefr:"B2"},
+  {w:"Meandering",s:"ART",cefr:"C2"},
+  {w:"Merchandise",s:"ART",cefr:"C1"},
+  {w:"Message",s:"ART",cefr:"A1"},
+  {w:"Monochrome",s:"ART",cefr:"B2"},
+  {w:"Nebulous",s:"ART",cefr:"C2"},
+  {w:"Noise",s:"ART",cefr:"A1"},
+  {w:"Orchestra",s:"ART",cefr:"B2"},
+  {w:"Originally",s:"ART",cefr:"B1"},
+  {w:"Palette",s:"ART",cefr:"B1"},
+  {w:"Parallel",s:"ART",cefr:"B1"},
+  {w:"Pattern",s:"ART",cefr:"A2"},
+  {w:"Performance",s:"ART",cefr:"B1"},
+  {w:"Perspective",s:"ART",cefr:"B2"},
+  {w:"Photograph",s:"ART",cefr:"B1"},
+  {w:"Piece",s:"ART",cefr:"A1"},
+  {w:"Porcelain",s:"ART",cefr:"B2"},
+  {w:"Multimedia",s:"ART",cefr:"C1"},
+  {w:"Partnership",s:"ART",cefr:"B1"},
+  {w:"Pesticide",s:"ART",cefr:"C1"},
+  {w:"Realism",s:"ART",cefr:"B2"},
+  {w:"Rhythm",s:"ART",cefr:"A2"},
+  {w:"Sculpture",s:"ART",cefr:"B1"},
+  {w:"Shading",s:"ART",cefr:"B1"},
+  {w:"Simulated",s:"ART",cefr:"C1"},
+  {w:"Sketch",s:"ART",cefr:"A2"},
+  {w:"Spontaneous",s:"ART",cefr:"C2"},
+  {w:"Strange",s:"ART",cefr:"A2"},
+  {w:"Suitable",s:"ART",cefr:"B1"},
+  {w:"Texture",s:"ART",cefr:"B1"},
+  {w:"Tone",s:"ART",cefr:"A1"},
+  {w:"Visual",s:"ART",cefr:"A2"},
+  {w:"Weave",s:"ART",cefr:"A2"},
+  {w:"Xylophone",s:"ART",cefr:"B2"},
+  {w:"Zigzag",s:"ART",cefr:"A2"},
+  {w:"Abacus",s:"TECH",cefr:"A2"},
+  {w:"Accessibility",s:"TECH",cefr:"C2"},
+  {w:"Address",s:"TECH",cefr:"A2"},
+  {w:"Afford",s:"TECH",cefr:"A2"},
+  {w:"Agriculture",s:"TECH",cefr:"B1"},
+  {w:"Amazing",s:"TECH",cefr:"A2"},
+  {w:"Attachment",s:"TECH",cefr:"A2"},
+  {w:"Bit",s:"TECH",cefr:"A1"},
+  {w:"Blogging",s:"TECH",cefr:"A2"},
+  {w:"Boost",s:"TECH",cefr:"A2"},
+  {w:"Boot",s:"TECH",cefr:"A1"},
+  {w:"Browser",s:"TECH",cefr:"A2"},
+  {w:"Business",s:"TECH",cefr:"A2"},
+  {w:"Calories",s:"TECH",cefr:"B1"},
+  {w:"Chain",s:"TECH",cefr:"A2"},
+  {w:"Characteristic",s:"TECH",cefr:"C2"},
+  {w:"Cloud",s:"TECH",cefr:"A2"},
+  {w:"Communication",s:"TECH",cefr:"B1"},
+  {w:"Connection",s:"TECH",cefr:"B1"},
+  {w:"Conserve",s:"TECH",cefr:"B1"},
+  {w:"Corporation",s:"TECH",cefr:"C1"},
+  {w:"Costume",s:"TECH",cefr:"A2"},
+  {w:"Crops",s:"TECH",cefr:"A2"},
+  {w:"Currency",s:"TECH",cefr:"A2"},
+  {w:"Cursor",s:"TECH",cefr:"A2"},
+  {w:"Customize",s:"TECH",cefr:"B1"},
+  {w:"Data",s:"TECH",cefr:"A1"},
+  {w:"Database",s:"TECH",cefr:"B1"},
+  {w:"Debugger",s:"TECH",cefr:"B2"},
+  {w:"Default",s:"TECH",cefr:"B1"},
+  {w:"Destroy",s:"TECH",cefr:"A2"},
+  {w:"Device",s:"TECH",cefr:"A2"},
+  {w:"Diagnostic",s:"TECH",cefr:"C1"},
+  {w:"Digital",s:"TECH",cefr:"A2"},
+  {w:"Division",s:"TECH",cefr:"A2"},
+  {w:"Dreadful",s:"TECH",cefr:"B1"},
+  {w:"Elaborate",s:"TECH",cefr:"C1"},
+  {w:"Entrepreneurship",s:"TECH",cefr:"C2"},
+  {w:"Epidemic",s:"TECH",cefr:"C1"},
+  {w:"Escape",s:"TECH",cefr:"A2"},
+  {w:"Execute",s:"TECH",cefr:"C1"},
+  {w:"Expansion slot",s:"TECH",cefr:"C1"},
+  {w:"Fabricate",s:"TECH",cefr:"C1"},
+  {w:"Fertilizer",s:"TECH",cefr:"C1"},
+  {w:"Fetch",s:"TECH",cefr:"B1"},
+  {w:"Fiber",s:"TECH",cefr:"A2"},
+  {w:"File",s:"TECH",cefr:"A1"},
+  {w:"Flash drive",s:"TECH",cefr:"B1"},
+  {w:"Flowchart",s:"TECH",cefr:"B2"},
+  {w:"Gallery",s:"TECH",cefr:"B1"},
+  {w:"Gigabyte",s:"TECH",cefr:"B2"},
+  {w:"Hacker",s:"TECH",cefr:"B1"},
+  {w:"Hardware",s:"TECH",cefr:"B1"},
+  {w:"Homepage",s:"TECH",cefr:"B1"},
+  {w:"Horticulture",s:"TECH",cefr:"C2"},
+  {w:"Hyperlink",s:"TECH",cefr:"B2"},
+  {w:"Identification",s:"TECH",cefr:"C2"},
+  {w:"Individual",s:"TECH",cefr:"B1"},
+  {w:"Instrument",s:"TECH",cefr:"B1"},
+  {w:"Juice",s:"TECH",cefr:"A1"},
+  {w:"Junk mail",s:"TECH",cefr:"B1"},
+  {w:"License",s:"TECH",cefr:"B1"},
+  {w:"Liquor",s:"TECH",cefr:"B1"},
+  {w:"Load",s:"TECH",cefr:"A1"},
+  {w:"Login",s:"TECH",cefr:"A2"},
+  {w:"Logout",s:"TECH",cefr:"A2"},
+  {w:"Luxurious",s:"TECH",cefr:"C1"},
+  {w:"Machine",s:"TECH",cefr:"A2"},
+  {w:"Mainboard",s:"TECH",cefr:"B2"},
+  {w:"Meanwhile",s:"TECH",cefr:"B1"},
+  {w:"Mechanism",s:"TECH",cefr:"C2"},
+  {w:"Megabyte",s:"TECH",cefr:"B2"},
+  {w:"Memory",s:"TECH",cefr:"A2"},
+  {w:"Merely",s:"TECH",cefr:"B1"},
+  {w:"Microprocessor",s:"TECH",cefr:"C2"},
+  {w:"Modem",s:"TECH",cefr:"A2"},
+  {w:"Monitor",s:"TECH",cefr:"A2"},
+  {w:"Multimedia",s:"TECH",cefr:"C1"},
+  {w:"Pamphlet",s:"TECH",cefr:"B2"},
+  {w:"Parakeet",s:"TECH",cefr:"B2"},
+  {w:"Phenomenon",s:"TECH",cefr:"C1"},
+  {w:"Pressure",s:"TECH",cefr:"B1"},
+  {w:"Processor",s:"TECH",cefr:"B2"},
+  {w:"Programmer",s:"TECH",cefr:"B2"},
+  {w:"Progress",s:"TECH",cefr:"B1"},
+  {w:"Qualification",s:"TECH",cefr:"C2"},
+  {w:"Quilt",s:"TECH",cefr:"A2"},
+  {w:"Recipe",s:"TECH",cefr:"A2"},
+  {w:"Recovery",s:"TECH",cefr:"B2"},
+  {w:"Reference",s:"TECH",cefr:"B1"},
+  {w:"Resolution",s:"TECH",cefr:"B2"},
+  {w:"Resource",s:"TECH",cefr:"B1"},
+  {w:"Security",s:"TECH",cefr:"B1"},
+  {w:"Sericulture",s:"TECH",cefr:"C2"},
+  {w:"Software",s:"TECH",cefr:"B1"},
+  {w:"Soothe",s:"TECH",cefr:"B1"},
+  {w:"Spaghetti",s:"TECH",cefr:"A2"},
+  {w:"Store",s:"TECH",cefr:"A1"},
+  {w:"Syrup",s:"TECH",cefr:"A2"},
+  {w:"Thumbnail",s:"TECH",cefr:"B1"},
+  {w:"Abroad",s:"ENG",cefr:"A2"},
+  {w:"Accent",s:"ENG",cefr:"B1"},
+  {w:"Accident",s:"ENG",cefr:"A2"},
+  {w:"Accurate",s:"ENG",cefr:"B2"},
+  {w:"Advertisement",s:"ENG",cefr:"C2"},
+  {w:"Affect",s:"ENG",cefr:"A2"},
+  {w:"Allergy",s:"ENG",cefr:"B1"},
+  {w:"Allow",s:"ENG",cefr:"A2"},
+  {w:"Along",s:"ENG",cefr:"A1"},
+  {w:"Annoying",s:"ENG",cefr:"A2"},
+  {w:"Antenna",s:"ENG",cefr:"B2"},
+  {w:"Antennae",s:"ENG",cefr:"B1"},
+  {w:"Antique",s:"ENG",cefr:"B2"},
+  {w:"Appointment",s:"ENG",cefr:"B1"},
+  {w:"Asparagus",s:"ENG",cefr:"B2"},
+  {w:"Attach",s:"ENG",cefr:"A2"},
+  {w:"Audience",s:"ENG",cefr:"A2"},
+  {w:"Available",s:"ENG",cefr:"A2"},
+  {w:"Barometer",s:"ENG",cefr:"C1"},
+  {w:"Basketball",s:"ENG",cefr:"A2"},
+  {w:"Battery",s:"ENG",cefr:"A2"},
+  {w:"Beginning",s:"ENG",cefr:"A2"},
+  {w:"Behind",s:"ENG",cefr:"A1"},
+  {w:"Beside",s:"ENG",cefr:"A1"},
+  {w:"Brochure",s:"ENG",cefr:"B2"},
+  {w:"Business",s:"ENG",cefr:"A2"},
+  {w:"Butterfly",s:"ENG",cefr:"A2"},
+  {w:"Calendar",s:"ENG",cefr:"A2"},
+  {w:"Campaign",s:"ENG",cefr:"B2"},
+  {w:"Century",s:"ENG",cefr:"A2"},
+  {w:"Championship",s:"ENG",cefr:"B2"},
+  {w:"Classical",s:"ENG",cefr:"B1"},
+  {w:"Cleanliness",s:"ENG",cefr:"B1"},
+  {w:"Comedy",s:"ENG",cefr:"A2"},
+  {w:"Compare",s:"ENG",cefr:"A2"},
+  {w:"Competition",s:"ENG",cefr:"B1"},
+  {w:"Concentrate",s:"ENG",cefr:"B2"},
+  {w:"Conclude",s:"ENG",cefr:"B2"},
+  {w:"Confident",s:"ENG",cefr:"B1"},
+  {w:"Confusion",s:"ENG",cefr:"B1"},
+  {w:"Conscious",s:"ENG",cefr:"B2"},
+  {w:"Container",s:"ENG",cefr:"B1"},
+  {w:"Counsellor",s:"ENG",cefr:"C1"},
+  {w:"Counselor",s:"ENG",cefr:"C1"},
+  {w:"Criteria",s:"ENG",cefr:"C1"},
+  {w:"Decline",s:"ENG",cefr:"A2"},
+  {w:"Delicious",s:"ENG",cefr:"A2"},
+  {w:"Describe",s:"ENG",cefr:"B1"},
+  {w:"Desire",s:"ENG",cefr:"A2"},
+  {w:"Determined",s:"ENG",cefr:"B2"},
+  {w:"Disappear",s:"ENG",cefr:"B1"},
+  {w:"Discovery",s:"ENG",cefr:"B1"},
+  {w:"Ecru",s:"ENG",cefr:"C2"},
+  {w:"Embarrassment",s:"ENG",cefr:"C2"},
+  {w:"Encourage",s:"ENG",cefr:"B1"},
+  {w:"Enormous",s:"ENG",cefr:"B1"},
+  {w:"Envelope",s:"ENG",cefr:"A2"},
+  {w:"Escalator",s:"ENG",cefr:"B2"},
+  {w:"Essential",s:"ENG",cefr:"A1"},
+  {w:"Evaluate",s:"ENG",cefr:"B2"},
+  {w:"Exhausted",s:"ENG",cefr:"B2"},
+  {w:"Exotic",s:"ENG",cefr:"B2"},
+  {w:"Experience",s:"ENG",cefr:"B2"},
+  {w:"Extinct",s:"ENG",cefr:"B2"},
+  {w:"Fascinate",s:"ENG",cefr:"B1"},
+  {w:"Fiction",s:"ENG",cefr:"A2"},
+  {w:"Harbor",s:"ENG",cefr:"B1"},
+  {w:"Harbour",s:"ENG",cefr:"B1"},
+  {w:"Hysteria",s:"ENG",cefr:"C1"},
+  {w:"Illegally",s:"ENG",cefr:"C1"},
+  {w:"Immediately",s:"ENG",cefr:"B1"},
+  {w:"Immigrant",s:"ENG",cefr:"B2"},
+  {w:"Insecure",s:"ENG",cefr:"B1"},
+  {w:"Intensive",s:"ENG",cefr:"C1"},
+  {w:"Jealous",s:"ENG",cefr:"A2"},
+  {w:"Knapsack",s:"ENG",cefr:"B2"},
+  {w:"Linguistic",s:"ENG",cefr:"C1"},
+  {w:"Luau",s:"ENG",cefr:"C2"},
+  {w:"Luncheonette",s:"ENG",cefr:"C2"},
+  {w:"Mariner",s:"ENG",cefr:"C2"},
+  {w:"Musician",s:"ENG",cefr:"B1"},
+  {w:"Nervous",s:"ENG",cefr:"A2"},
+  {w:"Obliged",s:"ENG",cefr:"B2"},
+  {w:"Omelet",s:"ENG",cefr:"B1"},
+  {w:"Omelette",s:"ENG",cefr:"B1"},
+  {w:"Pleased",s:"ENG",cefr:"A2"},
+  {w:"Pleasure",s:"ENG",cefr:"B1"},
+  {w:"Pollution",s:"ENG",cefr:"B2"},
+  {w:"Portray",s:"ENG",cefr:"B1"},
+  {w:"Practice",s:"ENG",cefr:"A2"},
+  {w:"Prescription",s:"ENG",cefr:"C1"},
+  {w:"Preserve",s:"ENG",cefr:"B1"},
+  {w:"Probably",s:"ENG",cefr:"A2"},
+  {w:"Pursue",s:"ENG",cefr:"B2"},
+  {w:"Raise",s:"ENG",cefr:"A1"},
+  {w:"Receipt",s:"ENG",cefr:"B2"},
+  {w:"Receptionist",s:"ENG",cefr:"C1"},
+  {w:"Recommend",s:"ENG",cefr:"B1"},
+  {w:"Region",s:"ENG",cefr:"B1"},
+  {w:"Regular",s:"ENG",cefr:"A2"},
+  {w:"Release",s:"ENG",cefr:"B1"},
+  {w:"Restaurant",s:"ENG",cefr:"B1"},
+  {w:"Restricted",s:"ENG",cefr:"B2"},
+  {w:"Scared",s:"ENG",cefr:"A2"},
+  {w:"Schoolchild",s:"ENG",cefr:"B1"},
+  {w:"Script",s:"ENG",cefr:"B2"},
+  {w:"Scruffy",s:"ENG",cefr:"B2"},
+  {w:"Senile",s:"ENG",cefr:"C1"},
+  {w:"Similar",s:"ENG",cefr:"A2"},
+  {w:"Situation",s:"ENG",cefr:"B2"},
+  {w:"Sketch",s:"ENG",cefr:"A2"},
+  {w:"Sneaker",s:"ENG",cefr:"A2"},
+  {w:"Struggle",s:"ENG",cefr:"B2"},
+  {w:"Subsequent",s:"ENG",cefr:"C2"},
+  {w:"Summary",s:"ENG",cefr:"B2"},
+  {w:"Surprised",s:"ENG",cefr:"A2"},
+  {w:"Survive",s:"ENG",cefr:"A2"},
+  {w:"Thatch",s:"ENG",cefr:"C1"},
+  {w:"Throughout",s:"ENG",cefr:"B2"},
+  {w:"Trouble",s:"ENG",cefr:"A2"},
+  {w:"Unique",s:"ENG",cefr:"B1"},
+  {w:"Usually",s:"ENG",cefr:"A2"},
+  {w:"Vivid",s:"ENG",cefr:"A2"},
+  {w:"Volunteer",s:"ENG",cefr:"B2"},
+  {w:"Wrestler",s:"ENG",cefr:"B2"},
+  {w:"Zephyr",s:"ENG",cefr:"C2"},
+  {w:"Abbreviation",s:"MATH",cefr:"C2"},
+  {w:"Abscissa",s:"MATH",cefr:"C2"},
+  {w:"Absolute",s:"MATH",cefr:"B1"},
+  {w:"Acknowledge",s:"MATH",cefr:"B2"},
+  {w:"Algebra",s:"MATH",cefr:"B2"},
+  {w:"Algorithm",s:"MATH",cefr:"C1"},
+  {w:"Annual",s:"MATH",cefr:"A2"},
+  {w:"Annulus",s:"MATH",cefr:"C2"},
+  {w:"Approximate",s:"MATH",cefr:"C1"},
+  {w:"Approximation",s:"MATH",cefr:"C2"},
+  {w:"Area",s:"MATH",cefr:"A1"},
+  {w:"Arithmetic",s:"MATH",cefr:"B2"},
+  {w:"Assumption",s:"MATH",cefr:"B2"},
+  {w:"Binomial",s:"MATH",cefr:"C2"},
+  {w:"Centimeter",s:"MATH",cefr:"C1"},
+  {w:"Centimetre",s:"MATH",cefr:"C1"},
+  {w:"Circumscribed",s:"MATH",cefr:"C2"},
+  {w:"Cuboid",s:"MATH",cefr:"B1"},
+  {w:"Coefficient",s:"MATH",cefr:"C1"},
+  {w:"Commission",s:"MATH",cefr:"B1"},
+  {w:"Complicated",s:"MATH",cefr:"A2"},
+  {w:"Congruent",s:"MATH",cefr:"C1"},
+  {w:"Consecutive",s:"MATH",cefr:"C1"},
+  {w:"Consequence",s:"MATH",cefr:"B1"},
+  {w:"Correspond",s:"MATH",cefr:"B1"},
+  {w:"Cylinder",s:"MATH",cefr:"B1"},
+  {w:"Decimal",s:"MATH",cefr:"A2"},
+  {w:"Decrease",s:"MATH",cefr:"A2"},
+  {w:"Degree",s:"MATH",cefr:"A1"},
+  {w:"Denominator",s:"MATH",cefr:"C1"},
+  {w:"Depth",s:"MATH",cefr:"A1"},
+  {w:"Diameter",s:"MATH",cefr:"B1"},
+  {w:"Division",s:"MATH",cefr:"A2"},
+  {w:"Dodecahedron",s:"MATH",cefr:"C2"},
+  {w:"Ellipse",s:"MATH",cefr:"B1"},
+  {w:"Equation",s:"MATH",cefr:"B1"},
+  {w:"Equivalent",s:"MATH",cefr:"A2"},
+  {w:"Estimate",s:"MATH",cefr:"B1"},
+  {w:"Expense",s:"MATH",cefr:"B1"},
+  {w:"Exponents",s:"MATH",cefr:"B2"},
+  {w:"Factor",s:"MATH",cefr:"A1"},
+  {w:"Fraction",s:"MATH",cefr:"B1"},
+  {w:"Frequency",s:"MATH",cefr:"B1"},
+  {w:"Geometry",s:"MATH",cefr:"B2"},
+  {w:"Gradient",s:"MATH",cefr:"B2"},
+  {w:"Hexahedron",s:"MATH",cefr:"C2"},
+  {w:"Icosahedron",s:"MATH",cefr:"C2"},
+  {w:"Identity",s:"MATH",cefr:"B1"},
+  {w:"Illustrate",s:"MATH",cefr:"B1"},
+  {w:"Integer",s:"MATH",cefr:"B1"},
+  {w:"Isometry",s:"MATH",cefr:"C1"},
+  {w:"Isosceles",s:"MATH",cefr:"C1"},
+  {w:"Kilogram",s:"MATH",cefr:"C1"},
+  {w:"Kilogramme",s:"MATH",cefr:"C1"},
+  {w:"Logarithm",s:"MATH",cefr:"C1"},
+  {w:"Mathematical",s:"MATH",cefr:"C2"},
+  {w:"Mathematics",s:"MATH",cefr:"C2"},
+  {w:"Matrix",s:"MATH",cefr:"B1"},
+  {w:"Measurement",s:"MATH",cefr:"A2"},
+  {w:"Mensuration",s:"MATH",cefr:"C2"},
+  {w:"Moment",s:"MATH",cefr:"A1"},
+  {w:"Multiply",s:"MATH",cefr:"A2"},
+  {w:"Numerator",s:"MATH",cefr:"B2"},
+  {w:"Oblique",s:"MATH",cefr:"B2"},
+  {w:"Parallel",s:"MATH",cefr:"B1"},
+  {w:"Parallelogram",s:"MATH",cefr:"C2"},
+  {w:"Percentile",s:"MATH",cefr:"C1"},
+  {w:"Place value",s:"MATH",cefr:"B1"},
+  {w:"Properly",s:"MATH",cefr:"A2"},
+  {w:"Proportion",s:"MATH",cefr:"B2"},
+  {w:"Provision",s:"MATH",cefr:"B2"},
+  {w:"Pyramid",s:"MATH",cefr:"B1"},
+  {w:"Quadrant",s:"MATH",cefr:"B1"},
+  {w:"Quarter",s:"MATH",cefr:"A1"},
+  {w:"Quartile",s:"MATH",cefr:"C1"},
+  {w:"Quotient",s:"MATH",cefr:"B1"},
+  {w:"Radian",s:"MATH",cefr:"B1"},
+  {w:"Radius",s:"MATH",cefr:"A2"},
+  {w:"Opaque",s:"MATH",cefr:"B2"},
+  {w:"Orbit",s:"MATH",cefr:"A2"},
+  {w:"Ratio",s:"MATH",cefr:"A1"},
+  {w:"Rational",s:"MATH",cefr:"B2"},
+  {w:"Right triangle",s:"MATH",cefr:"A2"},
+  {w:"Sector",s:"MATH",cefr:"B1"},
+  {w:"Significant",s:"MATH",cefr:"B2"},
+  {w:"Simplify",s:"MATH",cefr:"B1"},
+  {w:"Slope",s:"MATH",cefr:"A2"},
+  {w:"Solve",s:"MATH",cefr:"A2"},
+  {w:"Sphere",s:"MATH",cefr:"B1"},
+  {w:"Statistics",s:"MATH",cefr:"B2"},
+  {w:"Subtract",s:"MATH",cefr:"A1"},
+  {w:"Subtraction",s:"MATH",cefr:"A2"},
+  {w:"Sufficient",s:"MATH",cefr:"B2"},
+  {w:"Tangent",s:"MATH",cefr:"B1"},
+  {w:"Temperature",s:"MATH",cefr:"A2"},
+  {w:"Timetable",s:"MATH",cefr:"A2"},
+  {w:"Transversal",s:"MATH",cefr:"C1"},
+  {w:"Trapezoid",s:"MATH",cefr:"B2"},
+  {w:"Troops",s:"MATH",cefr:"A2"},
+  {w:"Variables",s:"MATH",cefr:"B1"},
+  {w:"Vertex",s:"MATH",cefr:"B1"},
+  {w:"Vertices",s:"MATH",cefr:"B2"},
+  {w:"Absorption",s:"SCI",cefr:"B2"},
+  {w:"Acceleration",s:"SCI",cefr:"C2"},
+  {w:"Adult",s:"SCI",cefr:"A1"},
+  {w:"Alkaline",s:"SCI",cefr:"B2"},
+  {w:"Amoeba",s:"SCI",cefr:"B1"},
+  {w:"Amoebae",s:"SCI",cefr:"B1"},
+  {w:"Analysis",s:"SCI",cefr:"B2"},
+  {w:"Annual",s:"SCI",cefr:"A2"},
+  {w:"Antenna",s:"SCI",cefr:"B2"},
+  {w:"Antennae",s:"SCI",cefr:"B1"},
+  {w:"Apparatus",s:"SCI",cefr:"B2"},
+  {w:"Aqueous",s:"SCI",cefr:"B2"},
+  {w:"Asthenosphere",s:"SCI",cefr:"C2"},
+  {w:"Bandage",s:"SCI",cefr:"A2"},
+  {w:"Barometer",s:"SCI",cefr:"C1"},
+  {w:"Beaker",s:"SCI",cefr:"A2"},
+  {w:"Biodiversity",s:"SCI",cefr:"C2"},
+  {w:"Buoyancy",s:"SCI",cefr:"B2"},
+  {w:"Carbohydrates",s:"SCI",cefr:"C1"},
+  {w:"Call",s:"SCI",cefr:"A1"},
+  {w:"Cerebral",s:"SCI",cefr:"C1"},
+  {w:"Chemist",s:"SCI",cefr:"B1"},
+  {w:"Chemistry",s:"SCI",cefr:"B1"},
+  {w:"Chlorophyll",s:"SCI",cefr:"C1"},
+  {w:"Chromatography",s:"SCI",cefr:"C2"},
+  {w:"Chromosome",s:"SCI",cefr:"C1"},
+  {w:"Circuits",s:"SCI",cefr:"B2"},
+  {w:"Cloning",s:"SCI",cefr:"C1"},
+  {w:"Combustion",s:"SCI",cefr:"B2"},
+  {w:"Control",s:"SCI",cefr:"A2"},
+  {w:"Cytoplasm",s:"SCI",cefr:"C1"},
+  {w:"Damage",s:"SCI",cefr:"A1"},
+  {w:"Dichotomy",s:"SCI",cefr:"C1"},
+  {w:"Diffusion",s:"SCI",cefr:"B2"},
+  {w:"Disease",s:"SCI",cefr:"A2"},
+  {w:"Dominant",s:"SCI",cefr:"B1"},
+  {w:"Droplet",s:"SCI",cefr:"B1"},
+  {w:"Duodenum",s:"SCI",cefr:"C1"},
+  {w:"Earthquake",s:"SCI",cefr:"B1"},
+  {w:"Ecology",s:"SCI",cefr:"B2"},
+  {w:"Ecosystem",s:"SCI",cefr:"B2"},
+  {w:"Electricity",s:"SCI",cefr:"C1"},
+  {w:"Element",s:"SCI",cefr:"A2"},
+  {w:"Embryo",s:"SCI",cefr:"B1"},
+  {w:"Enzymes",s:"SCI",cefr:"B2"},
+  {w:"Equilibrium",s:"SCI",cefr:"C2"},
+  {w:"Equipment",s:"SCI",cefr:"A2"},
+  {w:"Eutrophication",s:"SCI",cefr:"C2"},
+  {w:"Excretion",s:"SCI",cefr:"B2"},
+  {w:"Exothermic",s:"SCI",cefr:"C1"},
+  {w:"Experiment",s:"SCI",cefr:"B1"},
+  {w:"Extremely",s:"SCI",cefr:"B1"},
+  {w:"Fascinating",s:"SCI",cefr:"C1"},
+  {w:"Food chain",s:"SCI",cefr:"A2"},
+  {w:"Gene",s:"SCI",cefr:"A1"},
+  {w:"Genotype",s:"SCI",cefr:"B2"},
+  {w:"Geography",s:"SCI",cefr:"B1"},
+  {w:"Grassy",s:"SCI",cefr:"A1"},
+  {w:"Heredity",s:"SCI",cefr:"B2"},
+  {w:"Hermaphrodite",s:"SCI",cefr:"C2"},
+  {w:"Heterogeneous",s:"SCI",cefr:"C2"},
+  {w:"Hydraulic",s:"SCI",cefr:"C1"},
+  {w:"Hydrogenation",s:"SCI",cefr:"C2"},
+  {w:"Impression",s:"SCI",cefr:"B1"},
+  {w:"Induction",s:"SCI",cefr:"B2"},
+  {w:"Interpret",s:"SCI",cefr:"B1"},
+  {w:"Investigate",s:"SCI",cefr:"B1"},
+  {w:"Investigation",s:"SCI",cefr:"B1"},
+  {w:"Knowledge",s:"SCI",cefr:"B1"},
+  {w:"Liquidity",s:"SCI",cefr:"C1"},
+  {w:"Magnitude",s:"SCI",cefr:"B2"},
+  {w:"Material",s:"SCI",cefr:"A2"},
+  {w:"Measurement",s:"SCI",cefr:"A2"},
+  {w:"Microscope",s:"SCI",cefr:"B2"},
+  {w:"Minority",s:"SCI",cefr:"B2"},
+  {w:"Neurotransmitter",s:"SCI",cefr:"C2"},
+  {w:"Nutrients",s:"SCI",cefr:"A1"},
+  {w:"Negotiation",s:"SCI",cefr:"B2"},
+  {w:"Newsagent",s:"SCI",cefr:"A2"},
+  {w:"Nutritious",s:"SCI",cefr:"B1"},
+  {w:"Oscillation",s:"SCI",cefr:"C1"},
+  {w:"Osmosis",s:"SCI",cefr:"B1"},
+  {w:"Particle",s:"SCI",cefr:"B1"},
+  {w:"Peristalsis",s:"SCI",cefr:"C1"},
+  {w:"Pharmacy",s:"SCI",cefr:"B1"},
+  {w:"Pharynx",s:"SCI",cefr:"B1"},
+  {w:"Phenomenon",s:"SCI",cefr:"C1"},
+  {w:"Photosynthesis",s:"SCI",cefr:"C2"},
+  {w:"Platform",s:"SCI",cefr:"B1"},
+  {w:"Potassium",s:"SCI",cefr:"B2"},
+  {w:"Prediction",s:"SCI",cefr:"B1"},
+  {w:"Priority",s:"SCI",cefr:"B1"},
+  {w:"Process",s:"SCI",cefr:"B1"},
+  {w:"Radiation",s:"SCI",cefr:"B2"},
+  {w:"Refraction",s:"SCI",cefr:"B2"},
+  {w:"Reproduction",s:"SCI",cefr:"C1"},
+  {w:"Respiration",s:"SCI",cefr:"B2"},
+  {w:"Rigid",s:"SCI",cefr:"A1"},
+  {w:"Saccharin",s:"SCI",cefr:"B2"},
+  {w:"Seismology",s:"SCI",cefr:"C1"},
+  {w:"Sightseeing",s:"SCI",cefr:"A2"},
+  {w:"Siphon",s:"SCI",cefr:"B1"},
+  {w:"Solar system",s:"SCI",cefr:"B1"},
+  {w:"State",s:"SCI",cefr:"A1"},
+  {w:"Stimuli",s:"SCI",cefr:"C1"},
+  {w:"Stretch",s:"SCI",cefr:"A1"},
+  {w:"Structure",s:"SCI",cefr:"B1"},
+  {w:"Sulfur",s:"SCI",cefr:"B1"},
+  {w:"Sulphur",s:"SCI",cefr:"B1"},
+  {w:"Symbiosis",s:"SCI",cefr:"C1"},
+  {w:"Synthesis",s:"SCI",cefr:"B2"},
+  {w:"Temperature",s:"SCI",cefr:"A2"},
+  {w:"Thunderstorm",s:"SCI",cefr:"A2"},
+  {w:"Toothache",s:"SCI",cefr:"A2"},
+  {w:"Vaccine",s:"SCI",cefr:"A1"},
+  {w:"Vacuum",s:"SCI",cefr:"A1"},
+  {w:"Vegetable",s:"SCI",cefr:"A1"},
+  {w:"Abolish",s:"SOC",cefr:"B2"},
+  {w:"Advertisement",s:"SOC",cefr:"C2"},
+  {w:"Aggression",s:"SOC",cefr:"B2"},
+  {w:"Agriculture",s:"SOC",cefr:"B1"},
+  {w:"Amendment",s:"SOC",cefr:"B2"},
+  {w:"Anemic",s:"SOC",cefr:"B1"},
+  {w:"Anaemic",s:"SOC",cefr:"B1"},
+  {w:"Analyze",s:"SOC",cefr:"B1"},
+  {w:"Analyse",s:"SOC",cefr:"B1"},
+  {w:"Ancient",s:"SOC",cefr:"A2"},
+  {w:"Archeology",s:"SOC",cefr:"C2"},
+  {w:"Archaeology",s:"SOC",cefr:"C2"},
+  {w:"Argue",s:"SOC",cefr:"A2"},
+  {w:"Barter",s:"SOC",cefr:"B1"},
+  {w:"Behavior",s:"SOC",cefr:"A2"},
+  {w:"Behaviour",s:"SOC",cefr:"A2"},
+  {w:"Belief",s:"SOC",cefr:"A2"},
+  {w:"Bias",s:"SOC",cefr:"B2"},
+  {w:"Boundary",s:"SOC",cefr:"B2"},
+  {w:"Buildings",s:"SOC",cefr:"A1"},
+  {w:"Businesswoman",s:"SOC",cefr:"B1"},
+  {w:"Campsite",s:"SOC",cefr:"A2"},
+  {w:"Capitalism",s:"SOC",cefr:"C1"},
+  {w:"Cathedral",s:"SOC",cefr:"A1"},
+  {w:"Caucus",s:"SOC",cefr:"B2"},
+  {w:"Census",s:"SOC",cefr:"B1"},
+  {w:"Century",s:"SOC",cefr:"A2"},
+  {w:"Civil",s:"SOC",cefr:"A1"},
+  {w:"Civilization",s:"SOC",cefr:"C2"},
+  {w:"Civilisation",s:"SOC",cefr:"C2"},
+  {w:"Climate",s:"SOC",cefr:"A2"},
+  {w:"Colleague",s:"SOC",cefr:"B1"},
+  {w:"College",s:"SOC",cefr:"A2"},
+  {w:"Colony",s:"SOC",cefr:"B2"},
+  {w:"Communism",s:"SOC",cefr:"C1"},
+  {w:"Community",s:"SOC",cefr:"A2"},
+  {w:"Complimentary",s:"SOC",cefr:"C1"},
+  {w:"Conflict",s:"SOC",cefr:"B1"},
+  {w:"Conscious",s:"SOC",cefr:"B2"},
+  {w:"Consist",s:"SOC",cefr:"B1"},
+  {w:"Constitution",s:"SOC",cefr:"C2"},
+  {w:"Cooperation",s:"SOC",cefr:"C2"},
+  {w:"Countryside",s:"SOC",cefr:"A2"},
+  {w:"Criticism",s:"SOC",cefr:"C1"},
+  {w:"Crucifixion",s:"SOC",cefr:"C2"},
+  {w:"Culinary",s:"SOC",cefr:"C2"},
+  {w:"Culture",s:"SOC",cefr:"A2"},
+  {w:"Currency",s:"SOC",cefr:"A2"},
+  {w:"Decade",s:"SOC",cefr:"A2"},
+  {w:"Democracy",s:"SOC",cefr:"C1"},
+  {w:"Demography",s:"SOC",cefr:"C1"},
+  {w:"Desert",s:"SOC",cefr:"A2"},
+  {w:"Doctrine",s:"SOC",cefr:"B2"},
+  {w:"Drought",s:"SOC",cefr:"B2"},
+  {w:"Dynasty",s:"SOC",cefr:"B2"},
+  {w:"Earthquake",s:"SOC",cefr:"B1"},
+  {w:"Economics",s:"SOC",cefr:"C1"},
+  {w:"Employee",s:"SOC",cefr:"A2"},
+  {w:"Endorsement",s:"SOC",cefr:"C1"},
+  {w:"Equivalent",s:"SOC",cefr:"A2"},
+  {w:"Estate",s:"SOC",cefr:"B2"},
+  {w:"Ethical",s:"SOC",cefr:"B1"},
+  {w:"Ethnic",s:"SOC",cefr:"B2"},
+  {w:"Ethnicity",s:"SOC",cefr:"C1"},
+  {w:"Exposed",s:"SOC",cefr:"B1"},
+  {w:"Flood",s:"SOC",cefr:"A2"},
+  {w:"Generation",s:"SOC",cefr:"B2"},
+  {w:"Geography",s:"SOC",cefr:"B1"},
+  {w:"Government",s:"SOC",cefr:"A2"},
+  {w:"Hemisphere",s:"SOC",cefr:"C1"},
+  {w:"Hygienic",s:"SOC",cefr:"B1"},
+  {w:"Illegal",s:"SOC",cefr:"B1"},
+  {w:"Immoral",s:"SOC",cefr:"B2"},
+  {w:"Index",s:"SOC",cefr:"B1"},
+  {w:"Inherent",s:"SOC",cefr:"B2"},
+  {w:"Institute",s:"SOC",cefr:"B2"},
+  {w:"Institution",s:"SOC",cefr:"C1"},
+  {w:"Insufficient",s:"SOC",cefr:"C2"},
+  {w:"Justice",s:"SOC",cefr:"B1"},
+  {w:"Laxatives",s:"SOC",cefr:"B2"},
+  {w:"Legend",s:"SOC",cefr:"A2"},
+  {w:"Minority",s:"SOC",cefr:"B2"},
+  {w:"Myth",s:"SOC",cefr:"A1"},
+  {w:"Muscle",s:"SOC",cefr:"A2"},
+  {w:"Muscular",s:"SOC",cefr:"B1"},
+  {w:"Obstinate",s:"SOC",cefr:"B2"},
+  {w:"Orthodox",s:"SOC",cefr:"B2"},
+  {w:"Paradigm",s:"SOC",cefr:"B2"},
+  {w:"Patriotism",s:"SOC",cefr:"C1"},
+  {w:"Peace",s:"SOC",cefr:"A1"},
+  {w:"Periodic",s:"SOC",cefr:"B1"},
+  {w:"Plateau",s:"SOC",cefr:"B2"},
+  {w:"Policy",s:"SOC",cefr:"B1"},
+  {w:"Pound",s:"SOC",cefr:"A2"},
+  {w:"Prejudice",s:"SOC",cefr:"B2"},
+  {w:"Psychology",s:"SOC",cefr:"C1"},
+  {w:"Reign",s:"SOC",cefr:"B2"},
+  {w:"Reincarnation",s:"SOC",cefr:"C2"},
+  {w:"Relativism",s:"SOC",cefr:"C2"},
+  {w:"Religion",s:"SOC",cefr:"A2"},
+  {w:"Renaissance",s:"SOC",cefr:"C1"},
+  {w:"Responsibility",s:"SOC",cefr:"C2"},
+  {w:"Revolution",s:"SOC",cefr:"C1"},
+  {w:"Social",s:"SOC",cefr:"A1"},
+  {w:"Society",s:"SOC",cefr:"B1"},
+  {w:"Spoilage",s:"SOC",cefr:"B1"},
+  {w:"Structure",s:"SOC",cefr:"B1"},
+  {w:"Sufficiency",s:"SOC",cefr:"C1"},
+  {w:"Tariff",s:"SOC",cefr:"B2"},
+  {w:"Testament",s:"SOC",cefr:"C1"},
+  {w:"Temperature",s:"SOC",cefr:"A2"},
+  {w:"Testimonies",s:"SOC",cefr:"C1"},
+  {w:"Theatre",s:"SOC",cefr:"A2"},
+  {w:"Tropical",s:"SOC",cefr:"A2"},
+  {w:"Underground",s:"SOC",cefr:"A2"},
+  {w:"Urban",s:"SOC",cefr:"A1"},
+  {w:"Vogue",s:"SOC",cefr:"C1"},
+  {w:"Volcano",s:"SOC",cefr:"B1"},
+  {w:"Voltage",s:"SOC",cefr:"B1"},
+  {w:"Zygote",s:"SOC",cefr:"B1"}
+];
+
+const SENTENCES = {
+  "Antioxidant":"Blueberries are rich in antioxidant compounds that protect your cells.",
+  "Circulatory":"The circulatory system is responsible for pumping blood throughout the body.",
+  "Osteoporosis":"Her doctor diagnosed her with osteoporosis following a bone density test.",
+  "Socialization":"Early socialization helps children develop essential communication skills.",
+  "Cholesterol":"The doctor advised him to lower his cholesterol by changing his diet.",
+  "Hereditary":"Some forms of heart disease are hereditary and passed down through families.",
+  "Flexibility":"Regular stretching greatly improves flexibility and reduces the risk of injury.",
+  "Occupational":"She visited an occupational therapist to assist her recovery from the injury.",
+  "Anaerobic":"Sprinting is classified as an anaerobic exercise since it doesn't rely on oxygen.",
+  "Adolescence":"Adolescence is marked by rapid physical and emotional development.",
+  "Capillaries":"Oxygen reaches body tissues through tiny blood vessels called capillaries.",
+  "Deficiency":"A vitamin D deficiency can lead to fatigue and weakened bones.",
+  "Entrepreneurship":"Entrepreneurship demands creativity, resilience, and a willingness to take risks.",
+  "Microprocessor":"The microprocessor is often described as the brain of any computer.",
+  "Identification":"Visitors must present valid identification before entering the building.",
+  "Qualification":"She obtained a teaching qualification after completing her training program.",
+  "Accessibility":"The new lift was built to improve accessibility for people in wheelchairs.",
+  "Characteristic":"One characteristic of this species is its distinctively bright yellow tail.",
+  "Phenomenon":"The northern lights are a breathtaking natural phenomenon seen near the poles.",
+  "Dodecahedron":"A dodecahedron is a solid geometric shape with exactly twelve pentagonal faces.",
+  "Icosahedron":"An icosahedron is a three-dimensional shape that has twenty triangular faces.",
+  "Parallelogram":"A rectangle is actually a special type of parallelogram with four right angles.",
+  "Mathematical":"Each mathematical proof required a careful and logical sequence of steps.",
+  "Approximation":"The engineer used an approximation to quickly estimate the total project cost.",
+  "Abbreviation":"The abbreviation GPS stands for Global Positioning System.",
+  "Neurotransmitter":"Dopamine is a neurotransmitter closely associated with reward and motivation.",
+  "Eutrophication":"Eutrophication harms lakes when excessive nutrients cause rapid algae growth.",
+  "Biodiversity":"The Amazon rainforest is famous for its extraordinary biodiversity.",
+  "Photosynthesis":"Plants rely on photosynthesis to convert sunlight and carbon dioxide into food.",
+  "Heterogeneous":"The class was heterogeneous, with students coming from many different countries.",
+  "Hydrogenation":"Hydrogenation is used in food production to turn liquid oils into solid fats.",
+  "Chromatography":"Chromatography can be used to separate the pigments found in plant leaves.",
+  "Equilibrium":"After several minutes, the chemical reaction finally reached equilibrium.",
+  "Acceleration":"The car's acceleration from zero to one hundred was impressively fast.",
+  "Hermaphrodite":"Earthworms are hermaphrodite creatures, possessing both male and female organs.",
+  "Archaeology":"Archaeology uncovers how ancient peoples lived by studying physical remains.",
+  "Civilization":"The Indus Valley civilization is recognized as one of the world's oldest.",
+  "Responsibility":"It is your responsibility to submit the assignment before the deadline.",
+  "Reincarnation":"Certain religions teach that the soul undergoes reincarnation after death.",
+  "Cooperation":"International cooperation is vital for tackling global environmental challenges.",
+  "Embarrassment":"She felt deep embarrassment after mispronouncing the word in front of everyone.",
+  "Advertisement":"A colorful advertisement for the new phone appeared on every major website.",
+  "Receptionist":"The receptionist greeted every visitor with a warm and professional smile.",
+  "Championship":"Our school won the regional spelling bee championship for the third year running.",
+  "Fascinating":"The documentary about deep-sea creatures was absolutely fascinating to watch.",
+  "Luncheonette":"They stopped at a small luncheonette around the corner for a quick lunch.",
+  "Prescription":"The doctor issued a prescription for antibiotics after examining the patient.",
+  "Peristalsis":"Peristalsis refers to the wave-like muscle contractions that move food through your gut.",
+  "Oscillation":"The pendulum's oscillation gradually slowed due to air resistance and friction.",
+  "Seismology":"Seismology is the scientific discipline concerned with studying earthquakes.",
+  "Symbiosis":"The clownfish and sea anemone share a symbiosis where both creatures benefit.",
+  "Chromosome":"Each human body cell typically contains forty-six chromosomes.",
+  "Chlorophyll":"Chlorophyll is the green pigment that enables plants to absorb energy from sunlight.",
+  "Cerebral":"The neurologist explained that it was a cerebral condition affecting the brain.",
+  "Parallelogram":"The teacher drew a parallelogram on the whiteboard to demonstrate the concept.",
+  "Lymphatic":"The lymphatic system plays a key role in fighting infection and removing waste.",
+  "Malnourished":"Children who are malnourished often struggle to concentrate at school.",
+  "Insomnia":"Chronic insomnia can have serious effects on both mental and physical health.",
+  "Diarrhea":"Drinking unclean water is a common cause of diarrhea in developing regions.",
+  "Carbohydrates":"Athletes often eat foods rich in carbohydrates before a race to boost energy.",
+  "Respiration":"Aerobic respiration requires oxygen to convert glucose into usable energy.",
+  "Excretion":"Excretion is the biological process of removing waste products from the body.",
+  "Diffusion":"Diffusion is the movement of particles from an area of high to low concentration.",
+  "Refraction":"Refraction explains why a straw appears to bend when placed in a glass of water.",
+  "Electricity":"Electricity is generated in power stations and distributed to homes via cables.",
+  "Communism":"Communism is a political ideology that advocates for collective ownership of resources.",
+  "Democracy":"Democracy gives citizens the power to choose their government through free elections.",
+  "Patriotism":"Patriotism is a deep sense of pride and love for one's own country.",
+  "Psychology":"Psychology is the scientific study of the human mind and behavior.",
+  "Revolution":"The French Revolution dramatically changed the political landscape of Europe.",
+  "Constitution":"The constitution outlines the fundamental laws and principles of a nation.",
+  "Crucifixion":"The crucifixion is a central event in Christian religious tradition.",
+  "Perspective":"The painting used perspective to create a convincing sense of depth and distance.",
+  "Spontaneous":"Her spontaneous decision to travel abroad changed her life completely.",
+  "Meandering":"The river took a long meandering path through the valley before reaching the sea.",
+  "Logarithm":"A logarithm is the mathematical inverse of an exponentiation operation.",
+  "Circumscribed":"The circumscribed circle passes through all the vertices of the polygon.",
+  "Coefficient":"In the expression 5x, the number five is called the coefficient.",
+  "Isosceles":"An isosceles triangle has two sides of equal length.",
+  "Algorithm":"The algorithm was designed to sort a list of numbers in ascending order.",
+  "Binomial":"A binomial expression contains exactly two terms separated by a plus or minus sign.",
+  "Mensuration":"Mensuration involves calculating the area, volume, and perimeter of shapes.",
+  "Abscissa":"The abscissa refers to the horizontal x-coordinate on a graph.",
+  "Annulus":"An annulus is the ring-shaped region between two concentric circles.",
+};
+
+const SUBJ_LABELS = {PE:'PE',ART:'Art',TECH:'Tech',ENG:'English',MATH:'Math',SCI:'Science',SOC:'Social'};
+const CEFR_LEVELS = ['A1','A2','B1','B2','C1','C2'];
+const CEFR_DESC = {A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Int.',C1:'Advanced',C2:'Mastery'};
+const SUBJECTS = ['PE','ART','TECH','ENG','MATH','SCI','SOC'];
+const FLAGS = {'en-US':'US','en-GB':'UK','en-AU':'AU','en-IN':'IN'};
+const ACCENT_STYLE = {
+  'en-US': {rate:.82, pitch:1},
+  'en-GB': {rate:.78, pitch:1.04},
+  'en-AU': {rate:.8, pitch:.96},
+  'en-IN': {rate:.76, pitch:1.08}
+};
+
+let activeCEFR = new Set(['B1','B2','C1','C2']);
+let activeSubj = new Set(SUBJECTS);
+let wlCEFR = new Set(CEFR_LEVELS);
+let currentLang = 'en-US';
+
+let gameWords=[], currentIdx=0, passedWords=[], score=0;
+let correctCount=0, wrongCount=0, skippedCount=0;
+let timerInterval=null, timeLeft=300, results=[];
+let returnedPasses=new Set();
+let sentVisible=false, penalizedWord=false;
+let lastReviewWords=[];
+let reviewMode=false;
+const STORE_KEY = 'beeTrainerSettingsV1';
+
+let cachedVoices = [];
+function loadVoices() {
+  cachedVoices = speechSynthesis.getVoices();
+  return cachedVoices;
+}
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function getBestVoice(lang) {
+  cachedVoices = speechSynthesis.getVoices();
+  const vs = cachedVoices;
+  if (!vs.length) return null;
+  const target = lang.toLowerCase().replace('_','-');
+  const exact = vs.filter(v => v.lang.toLowerCase().replace('_','-') === target);
+  if (exact.length) return exact.find(v => !/compact|natural/i.test(v.name)) || exact[0];
+
+  const region = target.split('-')[1];
+  const byRegion = vs.filter(v => {
+    const code = v.lang.toLowerCase().replace('_','-');
+    const name = v.name.toLowerCase();
+    return code.endsWith('-' + region) || name.includes(region) ||
+      (region === 'gb' && /british|united kingdom|uk|england/.test(name)) ||
+      (region === 'au' && /australian|australia/.test(name)) ||
+      (region === 'in' && /indian|india/.test(name));
+  });
+  if (byRegion.length) return byRegion[0];
+
+  // Do not fall back to another English region; let the browser use u.lang.
+  return null;
+}
+
+function speak(text, rate=0.82, cb=null) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const style = ACCENT_STYLE[currentLang] || ACCENT_STYLE['en-US'];
+  u.lang = currentLang;
+  u.rate = Math.min(1.15, Math.max(.55, rate * (style.rate / ACCENT_STYLE['en-US'].rate)));
+  u.pitch = style.pitch;
+  const v = getBestVoice(currentLang);
+  if (v) u.voice = v;
+  if (cb) u.onend = cb;
+  setTimeout(() => speechSynthesis.speak(u), 50);
+}
+
+let sfxCtx = null;
+function getSfxCtx() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!sfxCtx) sfxCtx = new AudioCtx();
+  if (sfxCtx.state === 'suspended') sfxCtx.resume();
+  return sfxCtx;
+}
+
+function tone(freq, start, dur, type='sine', gain=.08) {
+  const ctx = getSfxCtx();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const amp = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+  amp.gain.setValueAtTime(0.0001, ctx.currentTime + start);
+  amp.gain.exponentialRampToValueAtTime(gain, ctx.currentTime + start + .015);
+  amp.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + start + dur);
+  osc.connect(amp).connect(ctx.destination);
+  osc.start(ctx.currentTime + start);
+  osc.stop(ctx.currentTime + start + dur + .02);
+}
+
+function playSfx(kind) {
+  if (kind === 'correct') {
+    tone(880, 0, .08, 'triangle', .07);
+    tone(1320, .07, .11, 'triangle', .055);
+  } else if (kind === 'wrong') {
+    tone(220, 0, .18, 'sawtooth', .045);
+    tone(165, .13, .24, 'sawtooth', .035);
+  } else if (kind === 'pass') {
+    tone(420, 0, .06, 'sine', .035);
+    tone(640, .045, .08, 'sine', .045);
+    tone(980, .105, .08, 'triangle', .035);
+  }
+}
+
+function updateAccent() {
+  currentLang = document.getElementById('accent-sel').value;
+  saveSettings();
+  document.getElementById('accent-flag').textContent = FLAGS[currentLang] || 'Voice';
+}
+function testVoice() { speak('The quick brown fox jumps over the lazy dog.', 0.85); }
+
+function saveSettings() {
+  const data = {
+    activeCEFR:[...activeCEFR],
+    activeSubj:[...activeSubj],
+    wlCEFR:[...wlCEFR],
+    currentLang
+  };
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (Array.isArray(data.activeCEFR)) activeCEFR = new Set(data.activeCEFR.filter(l => CEFR_LEVELS.includes(l)));
+    if (Array.isArray(data.activeSubj)) activeSubj = new Set(data.activeSubj.filter(s => SUBJECTS.includes(s)));
+    if (Array.isArray(data.wlCEFR)) wlCEFR = new Set(data.wlCEFR.filter(l => CEFR_LEVELS.includes(l)));
+    if (data.currentLang && FLAGS[data.currentLang]) currentLang = data.currentLang;
+  } catch (e) {}
+}
+
+function toggleSet(set, val) { set.has(val) ? set.delete(val) : set.add(val); }
+
+function initFilters() {
+  document.getElementById('accent-sel').value = currentLang;
+  document.getElementById('accent-flag').textContent = FLAGS[currentLang] || 'Voice';
+  const cf = document.getElementById('cefr-filter');
+  CEFR_LEVELS.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (activeCEFR.has(l) ? ' on' : '');
+    b.setAttribute('data-l', l);
+    b.innerHTML = `<b>${l}</b>`;
+    b.onclick = () => { toggleSet(activeCEFR, l); b.classList.toggle('on', activeCEFR.has(l)); updatePool(); saveSettings(); };
+    cf.appendChild(b);
+  });
+
+  const sf = document.getElementById('subj-filter');
+  SUBJECTS.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (activeSubj.has(s) ? ' on' : '');
+    b.textContent = SUBJ_LABELS[s];
+    b.onclick = () => { toggleSet(activeSubj, s); b.classList.toggle('on', activeSubj.has(s)); updatePool(); saveSettings(); };
+    sf.appendChild(b);
+  });
+
+  const wc = document.getElementById('wl-cefr');
+  CEFR_LEVELS.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (wlCEFR.has(l) ? ' on' : '');
+    b.setAttribute('data-l', l);
+    b.innerHTML = `<b>${l}</b>`;
+    b.onclick = () => { toggleSet(wlCEFR, l); b.classList.toggle('on', wlCEFR.has(l)); renderWL(); saveSettings(); };
+    wc.appendChild(b);
+  });
+
+  updatePool();
+}
+
+function getPool() {
+  const seen = new Set();
+  return WORDS.filter(w => {
+    if (!activeSubj.has(w.s) || !activeCEFR.has(w.cefr)) return false;
+    const k = w.w.toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+function updatePool() {
+  const n = getPool().length;
+  document.getElementById('pool-pill').textContent = n + ' words';
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  const pool = getPool();
+  if (pool.length < 20) {
+    alert(`Need at least 20 words but only have ${pool.length}. Enable more CEFR levels or subjects.`);
+    return;
+  }
+  reviewMode = false;
+  gameWords = shuffle(pool).slice(0,20);
+  startRound();
+}
+
+function startReviewRound() {
+  if (!lastReviewWords.length) return;
+  reviewMode = true;
+  gameWords = shuffle(lastReviewWords);
+  startRound();
+}
+
+function startRound() {
+  currentIdx=0; passedWords=[]; score=0;
+  correctCount=0; wrongCount=0; skippedCount=0;
+  timeLeft=300; results=[]; returnedPasses=new Set();
+  showScreen('s-game');
+  buildDots();
+  renderWord();
+  startTimer();
+}
+
+function buildDots() {
+  const el = document.getElementById('g-dots');
+  el.innerHTML = '';
+  for (let i=0; i<gameWords.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot-'+i;
+    el.appendChild(d);
+  }
+}
+function setDot(i, cls) { const d=document.getElementById('dot-'+i); if(d) d.className='dot '+cls; }
+
+function renderWord() {
+  if (currentIdx >= gameWords.length) { endGame(); return; }
+  const w = gameWords[currentIdx];
+  sentVisible = false; penalizedWord = false;
+
+  document.getElementById('g-num').textContent = `${currentIdx+1} / ${gameWords.length}`;
+  document.getElementById('g-score').textContent = `${score} / ${gameWords.length * 2}`;
+
+  const clean = w.w.replace(/[^a-zA-Z ]/g,'');
+  document.getElementById('g-meta').innerHTML =
+    `<span class="cb cb-${w.cefr}">${w.cefr}</span>
+     <span class="sb">${SUBJ_LABELS[w.s]}</span>
+     <span style="font-size:.72rem;color:var(--muted)">${clean.replace(/ /g,'').length} letters</span>`;
+
+  const blanks = w.w.split('').map(c => c===' ' ? '   ' : '_').join(' ');
+  document.getElementById('g-blanks').textContent = blanks;
+  document.getElementById('g-hint').textContent = `${clean.replace(/ /g,'').length}-letter word${w.w.includes(' ') ? ' (two words)' : ''}`;
+
+  const inp = document.getElementById('g-input');
+  inp.value = ''; inp.className = 'spell-input';
+  document.getElementById('g-fb').textContent = '';
+  document.getElementById('g-fb').className = 'feedback';
+  document.getElementById('sent-box').style.display = 'none';
+  document.getElementById('btn-hear').classList.remove('active');
+  document.getElementById('btn-sent').classList.remove('active');
+  document.getElementById('btn-spell').classList.remove('active');
+
+  renderPassedList();
+  setDot(currentIdx, 'curr');
+  inp.focus();
+  setTimeout(speakCurrent, 400);
+}
+
+function speakCurrent() {
+  if (currentIdx >= gameWords.length) return;
+  const w = gameWords[currentIdx];
+  const btn = document.getElementById('btn-hear');
+  btn.classList.add('active');
+  speak(w.w, 0.78, () => btn.classList.remove('active'));
+}
+
+function toggleSentence() {
+  if (currentIdx >= gameWords.length) return;
+  const w = gameWords[currentIdx];
+  const box = document.getElementById('sent-box');
+  const btn = document.getElementById('btn-sent');
+  sentVisible = !sentVisible;
+  if (sentVisible) {
+    const s = SENTENCES[w.w] || `The word is used in an academic context: "${w.w.split('').join(' ')}".`;
+    // Replace the word in the sentence with spaced-out letters (hides the spelling, shows rhythm)
+    const spaced = w.w.split('').map(c => c === ' ' ? '  ' : c).join(' - ');
+    const hi = s.replace(new RegExp('\\b' + w.w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b', 'gi'),
+      `<strong style="letter-spacing:.15em;font-style:normal;color:var(--blue)">${spaced}</strong>`);
+    box.innerHTML = hi;
+    box.className = 'sent-box';
+    box.style.display = 'block';
+    btn.classList.add('active');
+  } else {
+    box.style.display = 'none';
+    btn.classList.remove('active');
+  }
+}
+
+function speakLetters() {
+  if (currentIdx >= gameWords.length) return;
+  const w = gameWords[currentIdx];
+  const letters = w.w.replace(/[^a-zA-Z]/g,'').split('').join(', ');
+  const btn = document.getElementById('btn-spell');
+  btn.classList.add('active');
+  speak(letters, 0.5, () => btn.classList.remove('active'));
+  if (!penalizedWord) {
+    penalizedWord = true;
+    showFB('-1 point for using Spell Out', 'fb-warn');
+  }
+}
+
+function showFB(msg, cls) {
+  const el = document.getElementById('g-fb');
+  el.textContent = msg; el.className = 'feedback ' + cls;
+}
+
+function submitAnswer() {
+  const inp = document.getElementById('g-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  const w = gameWords[currentIdx];
+  const clean = s => s.toLowerCase().replace(/[^a-z]/g,'');
+  const ok = clean(val) === clean(w.w);
+  const altOk = w.w.includes('/') && clean(val) === clean(w.w.split('/')[1]);
+  if (ok || altOk) {
+    const pts = penalizedWord ? 1 : 2;
+    score += pts; correctCount++;
+    results.push({word:w.w, status:'correct', typed:val, pts});
+    inp.className = 'spell-input correct anim-pop';
+    showFB(`Correct! +${pts}`, 'fb-ok');
+    playSfx('correct');
+    setDot(currentIdx, 'done');
+    speechSynthesis && speechSynthesis.cancel();
+    currentIdx++;
+    setTimeout(renderWord, 750);
+  } else {
+    wrongCount++;
+    results.push({word:w.w, status:'wrong', typed:val});
+    inp.className = 'spell-input wrong anim-shake';
+    playSfx('wrong');
+    clearInterval(timerInterval);
+    speechSynthesis && speechSynthesis.cancel();
+    setTimeout(() => { setDot(currentIdx,'wrong'); showDQ(w.w, val); }, 650);
+  }
+}
+
+function passWord() {
+  const w = gameWords[currentIdx];
+  passedWords.push(currentIdx);
+  results.push({word:w.w, status:'skipped', typed:''});
+  skippedCount++;
+  setDot(currentIdx, 'skip');
+  playSfx('pass');
+  speechSynthesis && speechSynthesis.cancel();
+  currentIdx++;
+  renderWord();
+}
+
+function returnToPass(idx) {
+  returnedPasses.add(idx);
+  const tmp = gameWords[currentIdx];
+  gameWords[currentIdx] = gameWords[idx];
+  gameWords[idx] = tmp;
+  passedWords = passedWords.filter(i => i !== idx);
+  results = results.filter(r => r.word !== gameWords[idx].w || r.status !== 'skipped');
+  skippedCount = Math.max(0, skippedCount-1);
+  setDot(idx, '');
+  renderWord();
+}
+
+function renderPassedList() {
+  const avail = passedWords.filter(i => !returnedPasses.has(i));
+  const sec = document.getElementById('g-passed');
+  const list = document.getElementById('g-plist');
+  if (!avail.length) { sec.style.display='none'; return; }
+  sec.style.display = 'block';
+  list.innerHTML = avail.map(i => {
+    const w = gameWords[i];
+    return `<span class="pass-chip" onclick="returnToPass(${i})">#${i+1} - ${w.w.replace(/[^a-zA-Z]/g,'').length}L - <span class="cb cb-${w.cefr}" style="font-size:.65rem">${w.cefr}</span></span>`;
+  }).join('');
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    document.getElementById('g-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    const pct = (timeLeft/300)*100;
+    const fill = document.getElementById('t-fill');
+    fill.style.width = pct+'%';
+    fill.style.background = pct>50 ? 'var(--accent)' : pct>25 ? 'var(--amber)' : 'var(--red)';
+    if (timeLeft <= 0) { clearInterval(timerInterval); endGame(); }
+  }, 1000);
+}
+
+function showDQ(word, typed) {
+  showScreen('s-dq');
+  lastReviewWords = [gameWords[currentIdx]];
+  document.getElementById('dq-typed').textContent = typed;
+  document.getElementById('dq-correct').textContent = word;
+  document.getElementById('dq-stats').innerHTML = statCards([
+    {n:score,l:'Score'},{n:correctCount,l:'Correct'},
+    {n:skippedCount,l:'Skipped'},{n:`${currentIdx+1}/${gameWords.length}`,l:'Reached'},
+  ]);
+  setTimeout(() => speak(`The correct spelling is: ${word}`, 0.78), 800);
+}
+
+function endGame() {
+  clearInterval(timerInterval);
+  speechSynthesis && speechSynthesis.cancel();
+  showScreen('s-done');
+  const maxScore = gameWords.length * 2;
+  const pct = maxScore ? Math.round((score/maxScore)*100) : 0;
+  const reviewKeys = new Set(results.filter(r => r.status !== 'correct').map(r => r.word.toLowerCase()));
+  lastReviewWords = gameWords.filter(w => reviewKeys.has(w.w.toLowerCase()));
+  let em='*', title='Keep grinding', msg='Drill those hard words again.';
+  if (pct>=90){em='*';title='Outstanding!';msg='You\'re competition-ready.';}
+  else if (pct>=75){em='*';title='Great job!';msg='Almost there - review the misses.';}
+  else if (pct>=50){em='*';title='Getting there';msg='Focus on C1-C2 words.';}
+  document.getElementById('done-em').textContent = em;
+  document.getElementById('done-title').textContent = title;
+  document.getElementById('done-msg').textContent = `${pct}% (${score}/${maxScore} pts) - ${msg}`;
+  document.getElementById('done-stats').innerHTML = statCards([
+    {n:score,l:'Score'},{n:correctCount,l:'Correct'},
+    {n:skippedCount,l:'Skipped'},{n:wrongCount,l:'Wrong'},
+  ]);
+  document.getElementById('review-actions').classList.toggle('on', lastReviewWords.length > 0);
+  document.getElementById('done-results').innerHTML = results.map(r => {
+    const col = r.status==='correct'?'#4ade80':r.status==='wrong'?'#ff5252':'#fbbf24';
+    const detail = r.status==='wrong'
+      ? `<div class="rdetail">You typed: <span class="typed-wrong">${r.typed}</span></div>`
+      : r.status==='skipped'
+        ? `<div class="rdetail">Skipped / not attempted</div>`
+        : `<div class="rdetail">+${r.pts||2} pts</div>`;
+    return `<div class="result-item"><div class="rdot" style="background:${col}"></div><div><div class="rword">${r.word}</div>${detail}</div></div>`;
+  }).join('');
+}
+
+function statCards(items) {
+  return items.map(({n,l}) =>
+    `<div class="stat-card"><div class="stat-num">${n}</div><div class="stat-lbl">${l}</div></div>`
+  ).join('');
+}
+
+function openWordList() {
+  showScreen('s-wl');
+  renderWL();
+}
+
+function renderWL() {
+  const q = (document.getElementById('wl-search')?.value||'').toLowerCase();
+  const seen = new Set();
+  const words = WORDS.filter(w => {
+    if (!wlCEFR.has(w.cefr)) return false;
+    if (q && !w.w.toLowerCase().includes(q) && !SUBJ_LABELS[w.s].toLowerCase().includes(q)) return false;
+    const k = w.w.toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  }).sort((a,b) => {
+    const o={A1:0,A2:1,B1:2,B2:3,C1:4,C2:5};
+    return o[a.cefr]-o[b.cefr] || a.w.localeCompare(b.w);
+  });
+  document.getElementById('wl-count').textContent = `${words.length} words`;
+  document.getElementById('wl-list').innerHTML = words.length
+    ? words.map(w =>
+        `<div class="wl-item" onclick="speak('${w.w.replace(/'/g,"\\'")}',0.8)">
+          <span style="font-size:.875rem;font-weight:500">${w.w} <span title="Hear word" style="font-size:.86rem">🔊</span></span>
+          <div class="wl-right"><span class="cb cb-${w.cefr}">${w.cefr}</span><span class="sb">${SUBJ_LABELS[w.s]}</span></div>
+        </div>`).join('')
+    : '<div style="text-align:center;padding:3rem;color:var(--muted)">No words match your search.</div>';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goHome() {
+  clearInterval(timerInterval);
+  speechSynthesis && speechSynthesis.cancel();
+  showScreen('s-home');
+  updatePool();
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('s-game').classList.contains('active') && e.key==='Enter') {
+    e.preventDefault(); submitAnswer();
+  }
+});
+
+loadSettings();
+initFilters();
+</script>
+</body>
+</html>
+
+
+
+
